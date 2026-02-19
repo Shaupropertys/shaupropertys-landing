@@ -401,7 +401,7 @@ fbq('track', 'PageView');
 
 <!-- ===== SCRIPT ===== -->
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbwqvqqSBkcSWuqZl91mPiZ_NJM7rfO59Y-bVzgo_B5og6MRvLrCTLlpikMCtec9lgedCw/exec"; // Google Script URL baad me yaha daalna
+const scriptURL = "https://script.google.com/macros/s/AKfycbwqvqqSBkcSWuqZl91mPiZ_NJM7rfO59Y-bVzgo_B5og6MRvLrCTLlpikMCtec9lgedCw/exec";
 
 function openForm() {
   document.getElementById("formOverlay").style.display = "block";
@@ -416,12 +416,19 @@ const form = document.forms["google-sheet"];
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  const name = form.Name.value;
-  const phone = form.Phone.value;
-  const budget = form.Budget.value;
-  const purpose = form.Purpose.value;
-  const location = form.Location.value;
-const msg = `Hello, I'm interested in this project.
+  fetch(scriptURL, {
+    method: "POST",
+    body: new FormData(form),
+  })
+  .then(() => {
+
+    const name = form.Name.value;
+    const phone = form.Phone.value;
+    const budget = form.Budget.value;
+    const purpose = form.Purpose.value;
+    const location = form.Location.value;
+
+    const msg = `Hello, I'm interested in this project.
 
 Name: ${name}
 Phone: ${phone}
@@ -429,27 +436,24 @@ Budget: ${budget}
 Purpose: ${purpose}
 Location: ${location}`;
 
-  // 🔥 META LEAD TRACK
-  if (typeof fbq === 'function') {
-    fbq('track', 'Lead');
-  }
+    // 🔥 META LEAD TRACK
+    if (typeof fbq === "function") {
+      fbq("track", "Lead");
+    }
 
-  // 🚀 WhatsApp instantly open
-  window.open(
-    "https://wa.me/919251237984?text=" + encodeURIComponent(msg),
-    "_blank"
-  );
+    // 🚀 WhatsApp AFTER sheet save
+    window.open(
+      "https://wa.me/919251237984?text=" + encodeURIComponent(msg),
+      "_blank"
+    );
 
-  // 📊 Google Sheet save (jab URL mile tab kaam karega)
-  if (scriptURL !== "") {
-    fetch(scriptURL, {
-      method: "POST",
-      body: new FormData(form),
-    });
-  }
-
-  form.reset();
-  closeForm();
+    form.reset();
+    closeForm();
+  })
+  .catch(error => {
+    console.error("Error!", error.message);
+    alert("Something went wrong. Please try again.");
+  });
 });
 </script>
 
