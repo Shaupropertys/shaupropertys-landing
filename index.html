@@ -416,19 +416,13 @@ const form = document.forms["google-sheet"];
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  fetch(scriptURL, {
-    method: "POST",
-    body: new FormData(form),
-  })
-  .then(() => {
+  const name = form.Name.value;
+  const phone = form.Phone.value;
+  const budget = form.Budget.value;
+  const purpose = form.Purpose.value;
+  const location = form.Location.value;
 
-    const name = form.Name.value;
-    const phone = form.Phone.value;
-    const budget = form.Budget.value;
-    const purpose = form.Purpose.value;
-    const location = form.Location.value;
-
-    const msg = `Hello, I'm interested in this project.
+  const msg = `Hello, I'm interested in this project.
 
 Name: ${name}
 Phone: ${phone}
@@ -436,26 +430,28 @@ Budget: ${budget}
 Purpose: ${purpose}
 Location: ${location}`;
 
-    // 🔥 META LEAD TRACK
-    if (typeof fbq === "function") {
-      fbq("track", "Lead");
-    }
+  // 🔥 META LEAD TRACK
+  if (typeof fbq === "function") {
+    fbq("track", "Lead");
+  }
 
-    // 🚀 WhatsApp AFTER sheet save
-    window.open(
-      "https://wa.me/919251237984?text=" + encodeURIComponent(msg),
-      "_blank"
-    );
+  // 🚀 1️⃣ WhatsApp INSTANT OPEN (no wait)
+  window.open(
+    "https://wa.me/919251237984?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
 
-    form.reset();
-    closeForm();
-  })
-  .catch(error => {
-    console.error("Error!", error.message);
-    alert("Something went wrong. Please try again.");
-  });
+  // 📊 2️⃣ Google Sheet Save in BACKGROUND (no delay)
+  fetch(scriptURL, {
+    method: "POST",
+    body: new FormData(form),
+  }).catch(() => {});
+
+  form.reset();
+  closeForm();
 });
 </script>
+
 
 <!-- ================= END ================= -->
 <!-- ===== PREMIUM PROPERTY DETAILS SECTION ===== -->
