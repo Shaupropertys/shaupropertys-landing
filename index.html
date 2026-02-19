@@ -356,23 +356,20 @@
 
       <label>Select Your Budget Range</label>
       <select name="Budget" required>
+        <option>₹20–35L</option>
         <option>₹35–50L</option>
-        <option>₹50–60L</option>
         <option>₹60L+</option>
       </select>
 
       <label>Buying Purpose</label>
-      <select name="Purpose">
+      <select name="Purpose" required>
         <option>Self Use (Family Residence)</option>
         <option>Investment</option>
       </select>
 
-      <label>When Would You Like to Visit the Site?</label>
-      <select name="Visit">
-        <option>Immediate (1–3 days)</option>
-        <option>Within 7 days</option>
-        <option>7–15 days</option>
-      </select>
+      <!-- ✅ Preferred Location as Text Input -->
+      <label>Preferred Location</label>
+      <input type="text" name="Location" placeholder="Enter preferred area in Jaipur" required>
 
       <button type="submit" class="submit-btn">
         Book Site Visit on WhatsApp
@@ -383,10 +380,10 @@
   </div>
 </div>
 
+
 <!-- ===== SCRIPT ===== -->
 <script>
-const scriptURL =
-  "https://script.google.com/macros/s/AKfycbztYheAZ709IYjEP1C-8By3TH5iiGCCbNOMUrXjyOfwoz8ewIRtIIVPzYTb2ontPEDz/exec";
+const scriptURL = ""; // Google Script URL baad me yaha daalna
 
 function openForm() {
   document.getElementById("formOverlay").style.display = "block";
@@ -401,41 +398,42 @@ const form = document.forms["google-sheet"];
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  // 1️⃣ Save to Google Sheet
-  fetch(scriptURL, {
-    method: "POST",
-    body: new FormData(form),
-  })
-  .then(() => {
-    // 2️⃣ Open WhatsApp AFTER data saved
-    const name = form.Name.value;
-    const phone = form.Phone.value;
-    const budget = form.Budget.value;
-    const purpose = form.Purpose.value;
-    const visit = form.Visit.value;
+  const name = form.Name.value;
+  const phone = form.Phone.value;
+  const budget = form.Budget.value;
+  const purpose = form.Purpose.value;
+  const location = form.Location.value;
 
-    const msg =
-`Hi, I’m ${name}
+  const msg =
+`New Lead - ShauPropertys
+
+Name: ${name}
 Phone: ${phone}
 Budget: ${budget}
 Purpose: ${purpose}
-Site Visit: ${visit}
+Location: ${location}`;
 
-I’m interested in this project.
-Please assist with site visit details.`;
+  // 🔥 META LEAD TRACK
+  if (typeof fbq === 'function') {
+    fbq('track', 'Lead');
+  }
 
-    window.open(
-      "https://wa.me/916375759510?text=" + encodeURIComponent(msg),
-      "_blank"
-    );
+  // 🚀 WhatsApp instantly open
+  window.open(
+    "https://wa.me/919251237984?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
 
-    form.reset();
-    closeForm();
-  })
-  .catch(error => {
-    console.error("Error!", error.message);
-    alert("Something went wrong. Please try again.");
-  });
+  // 📊 Google Sheet save (jab URL mile tab kaam karega)
+  if (scriptURL !== "") {
+    fetch(scriptURL, {
+      method: "POST",
+      body: new FormData(form),
+    });
+  }
+
+  form.reset();
+  closeForm();
 });
 </script>
 
